@@ -1,12 +1,15 @@
 var _lang = null;
 var _filePath = null;//"../../locale.json";
 var _locale = null;
+var _fallbackLang = null;
 
-module.exports = function(lang, filePath) {
+module.exports = function(lang, filePath, fallbackLang) {
 	//set the lang and file relative path
 	_lang = lang;
 	_filePath = filePath;
 	_locale = require(_filePath);
+	_fallbackLang = fallbackLang;
+	
 
 	//Get the rule for pluralization
 	//http://localization-guide.readthedocs.org/en/latest/l10n/pluralforms.html 
@@ -248,9 +251,11 @@ module.exports = function(lang, filePath) {
 		__ : function(string, values) {
 			//return translation of the original sting if did not find the translation
 			var translation = string;
-			//get the corresponding translation from the file
+			//get the corresponding translation from the file, or use the fallback language if translation is not available
 			if (typeof _locale[string] != "undefined" && typeof _locale[string][_lang] != "undefined") {
 				translation = _locale[string][_lang];
+			} else if (typeof _locale[string] != "undefined" && typeof _locale[string][_lang] == "undefined" && typeof _locale[string][_fallbackLang] != "undefined") {
+				translation = _locale[string][_fallbackLang];
 			}
 
 			//If the string have place to render values withen
